@@ -1,0 +1,767 @@
+<html>
+
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.0/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.0/angular-sanitize.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/async@2.6.1/dist/async.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <script src="../dhis-web-pivot/reporttable.js"></script>
+  <style>
+    @media screen and (min-device-width: 1024px) {}
+
+    table {
+      page-break-after: auto;
+    }
+
+    tr {
+      page-break-inside: avoid;
+      page-break-after: auto;
+    }
+
+    td {
+      page-break-inside: avoid;
+      page-break-after: auto;
+    }
+
+    thead {
+      display: none;
+    }
+
+    tfoot {
+      display: table-footer-group;
+    }
+
+
+    .toggle-children {
+      background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABAhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1wTU06T3JpZ2luYWxEb2N1bWVudElEPSJ1dWlkOjY1RTYzOTA2ODZDRjExREJBNkUyRDg4N0NFQUNCNDA3IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOkYzRkRFQjcxODUzNTExRTU4RTQwRkQwODFEOUZEMEE3IiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOkYzRkRFQjcwODUzNTExRTU4RTQwRkQwODFEOUZEMEE3IiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE1IChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MTk5NzA1OGEtZDI3OC00NDZkLWE4ODgtNGM4MGQ4YWI1NzNmIiBzdFJlZjpkb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6YzRkZmQxMGMtY2NlNS0xMTc4LWE5OGQtY2NkZmM5ODk5YWYwIi8+IDxkYzp0aXRsZT4gPHJkZjpBbHQ+IDxyZGY6bGkgeG1sOmxhbmc9IngtZGVmYXVsdCI+Z2x5cGhpY29uczwvcmRmOmxpPiA8L3JkZjpBbHQ+IDwvZGM6dGl0bGU+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+5iogFwAAAGhJREFUeNpiYGBgKABigf///zOQg0EARH4A4gZyDIIZ8B/JoAJKDIDhB0CcQIkBRBtEyABkgxwoMQCGD6AbRKoBGAYxQgXIBRuZGKgAKPIC3QLxArnRSHZCIjspk52ZKMrOFBUoAAEGAKnq593MQAZtAAAAAElFTkSuQmCC");
+      height: 10px;
+      width: 10px;
+      background-size: contain;
+      display: inline-block;
+      position: relative;
+      top: 5px;
+      margin-right: 4px;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    .node-wrapper {
+        display: flex;
+        align-items: flex-start;
+        padding: 1px 10px;
+    }
+
+    .table__container,
+    .dropdown__container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    tree-dropdown.tree-dropdown {
+      display: flex;
+      justify-content: center;
+      margin: 30px;
+      width: 100%;
+      align-items: center;
+    }
+
+    .table__content {
+      width: 70%;
+      margin: 5px 0;
+    }
+
+    .strip {
+      border-bottom: 1px solid #cad5e5;
+      background-color: #ebf0f6;
+      padding: 16px 0;
+    }
+
+    th {
+      display: none;
+    }
+
+    .loader {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      width: 100%;
+      height: 100vh;
+    }
+
+    svg path,
+    svg rect {
+      fill: #276696;
+    }
+
+    .table__name {
+      width: 100%;
+      padding: 10px 20px;
+      margin: 5px;
+    }
+
+    .wrapper {
+      padding: 20px 10px;
+      margin: 0 auto;
+      width: 300px;
+    }
+
+    .org-dropdown {
+      /*background: white;
+      color: #364346;
+      position: absolute;*/
+      width: 100%;
+      padding: 20px 10px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    ul {
+      list-style-type: none;
+    }
+
+    .childOrg {
+      display: block;
+      list-style: none;
+      cursor: pointer;
+    }
+
+    .parentOrg {
+      list-style: none;
+      cursor: pointer;
+      margin: 4px 0;
+    }
+
+    .parentOrg>ul {
+      display: none;
+    }
+
+    .parentOrg.parentOrg-open > ul {
+      display: block;
+      padding-left: 15px;
+      margin-left: 10px;
+    }
+
+    .parentOrg.parentOrg-open>span.node-wrapper>span.toggle-children {
+      transform: rotate(90deg);
+    }
+
+    .orgUnitFilter {
+
+      width: 35%;
+      margin: 10px 0;
+    }
+
+    .thick {
+      font-weight: bold;
+    }
+
+
+  </style>
+</head>
+
+<body ng-app="datim" ng-controller="DatimController as vm">
+  <script>
+
+    var dataElements = [{
+      name: 'Unless changes are communicated to OGAC, <span class="thick">the total number on treatment reported for World AIDS Day will be:</span>',
+      dx: 'dx:VqlLJRUf0BK;v3xsMLRf1vo;MnT8mNq4gTQ',
+      pe: 'pe:2018Q1',
+      details: 'jhJY377rYzg',
+      cleaning: 'zX5Xi6MEnVU',
+      tableRows: [{
+        name: 'TX_CURR (DSD+TA)',
+        idsToSum: ['VqlLJRUf0BK']
+      },
+      {
+        name: 'TX_CURR (DSD)',
+        idsToSum: ['MnT8mNq4gTQ']
+      },
+      {
+        name: 'TX_CURR (TA)',
+        idsToSum: ['v3xsMLRf1vo']
+      }
+      ]
+    },
+    {
+      name: 'Unless changes are communicated to OGAC, <span class="thick">the total number new on treatment \
+         reported for World AIDS Day will be:</span>',
+      dx: 'dx:kOlJjttNYan;BunPg5H6AL9;JqSiilvpE7v',
+      pe: 'pe:2017Oct',
+      details: 'Etu0XYqCmAn',
+      cleaning: 'Anems9LFYOF',
+      tableRows: [{
+        name: 'TX_NEW (DSD+TA)',
+        idsToSum: ['kOlJjttNYan']
+      },
+      {
+        name: 'TX_NEW (DSD)',
+        idsToSum: ['BunPg5H6AL9']
+      },
+      {
+        name: 'TX_NEW (TA)',
+        idsToSum: ['JqSiilvpE7v']
+      }
+      ]
+    },
+    {
+      name: ' Unless changes are communicated to OGAC, <span class="thick">the total beneficiaries served by \
+        PEPFAR OVC programs for children and families affected by HIV reported for World AIDS Day will be:</span>',
+      dx: 'dx:m03JmgKKzbg;VLO4oeZKU23;jxUEhDU95PK',
+      pe: 'pe:2018Q1',
+      details: 'g2JYvyZZjgk',
+      cleaning: 'g2JYvyZZjgk',
+      tableRows: [{
+        name: 'OVC_SERV (DSD+TA)',
+        idsToSum: ['m03JmgKKzbg']
+      },
+      {
+        name: 'OVC_SERV (DSD)',
+        idsToSum: ['VLO4oeZKU23']
+      },
+      {
+        name: 'OVC_SERV (TA)',
+        idsToSum: ['jxUEhDU95PK']
+      }
+      ]
+    },
+    {
+      name: 'Unless changes are communicated to OGAC, <span class="thick">the total number of pregnant women with known \
+         HIV status at antenatal care reported for World AIDS Day will be:</span>',
+      dx: 'dx:voXQqg6fpwt;zOtmx50TpCD;lnNo7GtMsYp',
+      pe: 'pe:2017Oct',
+      details: 'Zj4FbGK8Ym9',
+      cleaning: 'ZLP1J7UCRlQ',
+      tableRows: [{
+        name: 'PMTCT_STAT (DSD+TA)',
+        idsToSum: ['voXQqg6fpwt']
+      },
+      {
+        name: 'PMTCT_STAT (DSD)',
+        idsToSum: ['zOtmx50TpCD']
+      },
+      {
+        name: 'PMTCT_STAT (TA)',
+        idsToSum: ['lnNo7GtMsYp']
+      }
+      ]
+    },
+    {
+      name: 'Unless changes are communicated to OGAC, <span class="thick">the total number of pregnant women  \
+        newly identified positive HIV status at antenatal care reported for World AIDS Day will be:</span>',
+      dx: 'dx:rcxjjFY00dN;cPZyxrs4Jn1;HNYb1dHTJ96',
+      pe: 'pe:2017Oct',
+      details: 'HsWHd5gflWO',
+      cleaning: 'UbRwVTDCKW6',
+      tableRows: [{
+        name: 'PMTCT_STAT_NEW_POS (DSD+TA)',
+        idsToSum: ['rcxjjFY00dN']
+      },
+      {
+        name: 'PMTCT_STAT_NEW_POS (DSD)',
+        idsToSum: ['cPZyxrs4Jn1']
+      },
+      {
+        name: 'PMTCT_STAT_NEW_POS (TA)',
+        idsToSum: ['HNYb1dHTJ96']
+      }
+      ]
+    },
+    {
+      name: 'Unless changes are communicated to OGAC, <span class="thick">the total number of males circumcised \
+         as part of the voluntary medical male circumcision (VMMC) for HIV prevention program reported for World AIDS Day will be:</span>',
+      dx: 'dx:KY94ksQeulV;lE698ixI2iO;phTRGTdsoqz',
+      pe: 'pe:2017Oct',
+      details: 'SuMVezR8lVC',
+      cleaning: 'fr2ZPMrsnJm',
+      tableRows: [{
+        name: 'VMMC_CIRC (DSD+TA)',
+        idsToSum: ['KY94ksQeulV']
+      },
+      {
+        name: 'VMMC_CIRC (DSD)',
+        idsToSum: ['lE698ixI2iO']
+      },
+      {
+        name: 'VMMC_CIRC (TA)',
+        idsToSum: ['phTRGTdsoqz']
+      }
+      ]
+    },
+    {
+      name: 'Unless changes are communicated to OGAC, <span class="thick">the total number of individuals who received HIV \
+         Testing Services (HTS) and received their test results reported for World AIDS Day will be:</span>',
+      dx: 'dx:EJjwT5GY1qV;K6f6jR0NOcZ;FJSew4Ks0j3',
+      pe: 'pe:2017Oct',
+      details: 'sc9DHn8bvwA',
+      cleaning: 'rAJ4WttiE7h',
+      tableRows: [{
+        name: 'HTS_TST (DSD+TA)',
+        idsToSum: ['EJjwT5GY1qV']
+      },
+      {
+        name: 'HTS_TST (DSD)',
+        idsToSum: ['K6f6jR0NOcZ']
+      },
+      {
+        name: 'HTS_TST (TA)',
+        idsToSum: ['FJSew4Ks0j3']
+      }
+      ]
+    },
+    {
+      name: 'Unless changes are communicated to OGAC, <span class="thick">the total number individuals who received HIV \
+        Testing Services (HTS) and received their positive test results reported for World AIDS Day will be:</span> ',
+      dx: 'dx:sLP7ZqKfg5A;finUkshlHKY;wMFPwgqYHun',
+      pe: 'pe:2017Oct',
+      details: 'cJJu6xukEfb',
+      cleaning: 'QE1wiPkCCex',
+      tableRows: [{
+        name: 'HTS_TST_POS (DSD+TA)',
+        idsToSum: ['sLP7ZqKfg5A']
+      },
+      {
+        name: 'HTS_TST_POS (DSD)',
+        idsToSum: ['finUkshlHKY']
+      },
+      {
+        name: 'HTS_TST_POS (TA)',
+        idsToSum: ['wMFPwgqYHun']
+      }
+      ]
+    },
+    {
+      name: 'Unless changes are communicated to OGAC,<span class="thick">the total number of new health workers who \
+         graduated from a pre-service training institution or program as a result of PEPFAR-supported \
+          strengthening efforts reported for World AIDS Day will be:</span> ',
+      dx: 'dx:Q7dzwYIVj9C',
+      pe: 'pe:2017Q3',
+      details: 'AuGvwD3bQQO',
+      cleaning: 'jhJY377rYzg',
+      tableRows: [{
+        name: 'HRH_PRE Total',
+        idsToSum: ['sLP7ZqKfg5A']
+      }
+      ]
+    }
+    ];
+
+    var datim = angular.module("datim", ["ngSanitize"]);
+    datim.constant('GLOBAL', {
+      '_': window._,
+      'reportTablePlugin': window.reportTablePlugin,
+      'async': window.async,
+      'rootUrl': '../api/',
+      'dataElements': dataElements
+    });
+
+    datim.service('DatimService', Service);
+
+    Service.$inject = ['$http', '$location', 'GLOBAL'];
+
+    /* @ngInject */
+    function Service($http, $location, GLOBAL) {
+      var organisationUnits = {};
+      var serviceReturn = {
+        asyncGetData: asyncGetData,
+        getUserOrgUnit: getUserOrgUnit,
+        setOrgUnit: setOrgUnit,
+        getOrgUnit: getOrgUnit,
+        getOrgUnitTree: getOrgUnitTree
+      };
+
+      return serviceReturn;
+
+      function asyncGetData(dataElement, asyncCallBack) {
+        var completUrl = GLOBAL.rootUrl + 'analytics.json?dimension=' + dataElement.dx + '&dimension=' + dataElement.pe;
+
+        if (_.has(dataElement, 'otherdx')) {
+          completUrl += '&dimension=' + dataElement.otherdx;
+        }
+        if (_.has(dataElement, 'sexdx')) {
+          completUrl += '&dimension=' + dataElement.sexdx;
+        }
+
+        completUrl += '&filter=ou:' + organisationUnits.id + '&displayProperty=NAME';
+
+        return $http.get(completUrl)
+          .then(getDataComplete)
+          .catch(getDataFailed);
+
+        function getDataComplete(response) {
+          return asyncCallBack(null, _formatResponse(dataElement, response.data));
+        }
+
+        function getDataFailed(error) {
+          console.error('XHR Failed for getData.' + error);
+          return asyncCallBack(error, null);
+        }
+
+        function _formatResponse(dtE, response) {
+          var pe = response.metaData.dimensions.pe[0]
+          var tablePeriod = response.metaData.items[pe].name;
+
+          var formatted = {
+            tableName: dtE.name,
+            tableDetails: dtE.details,
+            tableCleaning: dtE.cleaning,
+            tablePeriod: tablePeriod
+          };
+
+          var tableRowsArray = _.transform(dtE.tableRows, function (results, tableRow) {
+            var sum = 0;
+
+            _.map(response.rows, function (row) {
+              if ((tableRow['idsToSum'].indexOf(row[0]) >= 0)) {
+                sum += parseFloat((row.slice(-1)[0]))
+              }
+            });
+
+            results.push({
+              name: tableRow.name,
+              total: sum.toLocaleString()
+            })
+
+          }, []);
+          formatted['tableRows'] = tableRowsArray;
+
+          return formatted;
+        }
+
+      }
+
+      function getUserOrgUnit() {
+        var userUrl = GLOBAL.rootUrl + 'me.json?fields=organisationUnits[id,name,level]';
+        return $http.get(userUrl)
+          .then(function (response) {
+            return response.data;
+          })
+          .catch(function (error) {
+            console.error(error);
+          });
+      }
+
+      function setOrgUnit(orgUnits) {
+        console.log(orgUnits);
+        organisationUnits = angular.copy(orgUnits);
+      }
+
+      function getOrgUnit() {
+        return organisationUnits;
+      }
+
+      function getOrgUnitTree(parentOrgId) {
+        var orgUrl = GLOBAL.rootUrl + 'organisationUnits.json?fields=id,name,level,children[id,name,level,children[id,name,level,children[id,name,level]]]&filter=id:in:[' + parentOrgId + ']&paging=false&order';
+        return $http.get(orgUrl)
+          .then(function (response) {
+            return response.data
+          })
+          .catch(function (error) {
+            console.error(error);
+          })
+      }
+
+    }
+
+    datim.directive('treeDropdown', treeDropdown);
+
+    treeDropdown.$inject = ['$compile', '$rootScope', 'DatimService', 'GLOBAL'];
+    /* @ngInject */
+    function treeDropdown($compile, $rootScope, DatimService, GLOBAL) {
+      return {
+        restrict: 'E',
+        scope: {
+          data: '=',
+          selected: '='
+        },
+
+        templateUrl: "tree-dropdown-directive.html",
+
+        controller: function ($scope, $element) {
+          ctrl = $scope;
+          ctrl.isOpen = false;
+          ctrl.selected = null;
+
+          activate();
+
+          function activate() {
+            ctrl.selected = DatimService.getOrgUnit();
+          }
+
+          ctrl.openTree = function () {
+            ctrl.isOpen = ctrl.isOpen ? false : true;
+          }
+
+          ctrl.childClick = function (obj) {
+            setSelected(ctrl, obj);
+            var orgUnit = _.pick(obj, ['id', 'name', 'level']);
+            DatimService.setOrgUnit(orgUnit);
+            ctrl.$emit('orgUnitUpdated');
+            ctrl.isOpen = false;
+            ctrl.$apply();
+          }
+        },
+        link: function (scope, element, attrs, ngModel) {
+          var list = angular.element(element[0].querySelector('.org-dropdown'));
+
+          scope.$watchGroup(['data', 'selected'], function (newValues, oldValues, scope) {
+            list.html('');
+
+            if (!scope.selected) {
+              setSelected(scope, null);
+            }
+            var options = getOptions(scope, scope.data, 0);
+            list.append($compile(options)(scope));
+          });
+
+          // Close on click outside the dropdown...
+          angular.element(document).bind('click', function (event) {
+            if (element !== event.target && !element[0].contains(event.target)) {
+              scope.$apply(function () {
+                scope.isOpen = false;
+              })
+            }
+          });
+        }
+      };
+
+      function getOptions(scope, data, level) {
+
+        var optionUL = angular.element("<ul></ul>");
+
+        var data_asc = _.orderBy(data, 'name', 'asc');
+
+        console.log(data_asc);
+        angular.forEach(data_asc, function (obj) {
+          var isObjAParent = obj.hasOwnProperty('children')
+          var orgUnitLI = angular.element("<li></li>");
+          var spanPlusOrMinus = angular.element("<span></span>");
+          var orgUnitName = angular.element("<span>" + obj.name + "</span>");
+          var spanContainer = angular.element("<span></span>");
+          spanContainer.addClass('node-wrapper');
+
+          spanContainer.append(orgUnitName);
+
+          if (isObjAParent) {
+            spanPlusOrMinus.addClass('toggle-children');
+            orgUnitLI.addClass('parentOrg');
+
+            if (obj.level == 1) {
+              orgUnitLI.addClass('parentOrg-open')
+            }
+
+            spanPlusOrMinus.bind("click", function (event) {
+              angular.element(event.currentTarget.parentElement.parentElement).toggleClass('parentOrg-open');
+              event.stopPropagation();
+            });
+
+          };
+
+          spanContainer.append([spanPlusOrMinus, orgUnitName])
+
+          orgUnitLI.append(spanContainer);
+
+          // Set selected option if selected id or object exist..
+          if (scope.selected == obj) {
+            setSelected(scope, obj);
+          }
+
+          orgUnitName.bind("click", function () {
+            scope.childClick(obj);
+          })
+
+
+          if (isObjAParent) {
+
+            orgUnitLI.append(getOptions(scope, obj.children, level + 1));
+
+          }
+          optionUL.append(orgUnitLI);
+        })
+
+        return optionUL;
+      }
+
+      function setSelected(scope, obj) {
+        if (obj) {
+          scope.selected = obj;
+        } else {
+          scope.selected = null;
+        }
+      }
+    }
+
+
+    datim.controller('DatimController', Controller);
+
+    Controller.$inject = ['$scope', '$element', 'GLOBAL', 'DatimService'];
+
+    /* @ngInject */
+    function Controller($scope, $element, GLOBAL, DatimService) {
+      var vm = this;
+      vm.table = [];
+      vm.isLoading = true;
+      vm.userOgUnit = {};
+      vm.orgTree = [];
+      vm.orgTreeLevels = 0;
+      vm.treeIsLoaded = false;
+      vm.currentOrgUnit = null;
+      vm.loadTablePlugin = loadTablePlugin;
+
+
+      activate();
+
+      function activate() {
+
+        DatimService.getUserOrgUnit().then(function (response) {
+          var orgUnit = response.organisationUnits[0];
+          vm.orgTreeLevels = response.organisationUnits[0].level;
+          vm.currentOrgUnit = angular.copy(orgUnit);
+          DatimService.setOrgUnit(orgUnit);
+          AsyncLoadData();
+          //get all the tree
+          getOrgUnitTree(orgUnit);
+        });
+      }
+
+      function AsyncLoadData() {
+        vm.isLoading = true;
+        GLOBAL.async.map(GLOBAL.dataElements, DatimService.asyncGetData, doneAsync);
+      }
+
+      function doneAsync(error, results) {
+        vm.table = results.slice(0);
+        vm.isLoading = false;
+      }
+
+      function getOrgUnitTree(orgUnit) {
+        vm.isLoading = true;
+        DatimService.getOrgUnitTree(orgUnit.id).then(_manipulateData);
+      }
+
+      function _manipulateData(response) {
+        vm.orgTree = response.organisationUnits;
+        $scope.treeData = response.organisationUnits;
+      }
+
+      // listen for the event in the relevant $scope
+      $scope.$on('orgUnitUpdated', function (event, data) {
+        vm.currentOrgUnit = DatimService.getOrgUnit();
+        AsyncLoadData();
+      });
+
+      function orgSelectedChange() {
+        console.log(vm.selected);
+      }
+
+      function loadTablePlugin(el, id, title) {
+        const reportTablePlugin = GLOBAL.reportTablePlugin;
+        reportTablePlugin.load({ el, id });
+      }
+    }
+  </script>
+
+  <script>
+    $(document).ready(function () {
+      var root = location.protocol + '//' + location.host;
+
+      reportTablePlugin.url = root;
+
+      reports = [
+        { el: "report1", "id": "jhJY377rYzg", title: "TX_CURR" }];
+      reportTablePlugin.load(reports);
+
+
+
+      var tableData = "";
+      $.each(reports, function (index, data) {
+        tableData += '<div class="container">'
+        tableData += '<div class="row" style="height: 32px; background-color: rgba(51, 122, 183, 0.27); font-size: 24px ;"">' + data.title + '</div>'
+        tableData += '<div class="help-block"></div>'
+        tableData += '<div class="row"><table><thead/><tr>'
+        tableData += '<td>'
+        tableData += '<div class="col-sm-9"><td><div id=' + data.el + "></div></td></div>"
+        tableData += '</tr></table></div></div>'
+      });
+      $('#reportData').html(tableData);
+    });
+
+  </script>
+
+  <!-- 3  -->
+
+  <div class="loader" title="2" ng-if="vm.isLoading">
+    <svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+      y="0px" width="150px" height="150px" viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+      <path fill="#000" d="M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z">
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s"
+          repeatCount="indefinite" />
+      </path>
+    </svg>
+    <h2>Loading Data ....</h2>
+  </div>
+
+  <main class="table__container" ng-if="!vm.isLoading">
+    <tree-dropdown class="tree-dropdown" data="treeData" selected="selected" class="dropdown__container d-print-none"></tree-dropdown>
+    <h3>World AIDS Day FY2018 Report for: {{vm.currentOrgUnit.name}}</h3>
+    <section class="table__content" ng-repeat="table in vm.table">
+      <div class="strip col-sm-12">
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <p class="table__name">
+            <div ng-bind-html="table.tableName"></div>
+          </p>
+        </div>
+        <div class="col-md-6">
+          <table class="table table-striped table-bordered">
+            <tbody>
+              <tr>
+                <td ng-repeat="row in table.tableRows" class="text-center" style="width:300px">{{row.name}}</td>
+              </tr>
+              <tr>
+                <td ng-repeat="row in table.tableRows" class="text-center" style="width:150px">{{row.total}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-6">
+          <!-- <table>
+          <tr>
+            <td><a href="/api/reportTables/{{table.tableDetails}}/data.html+css" target="_blank">Click here for WAD
+                disaggregates</a></td>
+          <tr>
+            <td><a href="/dhis-web-pivot/?id={{table.tableCleaning}}" target="_blank">Click here to clean this
+                indicator using a Pivot Table</a></td>
+          </tr>
+        </table> -->
+          <button class="btn btn-secondary btn-sm" type="button" ng-click="vm.loadTablePlugin(table.tableDetails, table.tableDetails, table.tableDetails)">Show
+            WAD disaggregates
+          </button>
+          <a class="btn btn-secondary btn-sm" href="/dhis-web-pivot/?id={{table.tableCleaning}}" target="_blank">Click
+            here to clean this
+            indicator using a Pivot Table</a>
+        </div>
+        <div class="col-6" id="{{table.tableDetails}}"></div>
+      </div>
+    </section>
+  </main>
+  <script type="text/ng-template" id="tree-dropdown-directive.html">
+    <div class="dropdown orgUnitFilter d-print-none" ng-class="{ 'show': isOpen}">
+      <button class="btn btn-secondary btn-sm btn-block dropdown-toggle" type="button" ng-click="openTree()">
+        {{selected.name || 'Select Organization Unit'}}
+      </button>
+      <div class="dropdown-menu org-dropdown" ng-class="{ 'show': isOpen}">
+      </div>
+    </div>
+  </script>
+
+
+</body>
+
+</html>
