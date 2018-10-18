@@ -741,7 +741,9 @@
           <button onclick="this.disabled=true" class="btn btn-secondary btn-sm" type="button" ng-click="vm.loadTablePlugin(table.tableDetails, table.tableDetails, table.tableDetails)">Show
             WAD disaggregates
           </button>
-          <a class="btn btn-secondary btn-sm" href="/dhis-web-pivot/?id={{table.tableCleaning}}" target="_blank">Click
+          <!-- Show cleaning button if is there otherwise hide the button -->
+          <a ng-if="table.tableCleaning" class="btn btn-secondary btn-sm" href="/dhis-web-pivot/?id={{table.tableCleaning}}"
+            target="_blank">Click
             here to clean this
             indicator using a Pivot Table</a>
         </div>
