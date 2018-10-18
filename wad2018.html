@@ -674,8 +674,6 @@
         { el: "report1", "id": "jhJY377rYzg", title: "TX_CURR" }];
       reportTablePlugin.load(reports);
 
-
-
       var tableData = "";
       $.each(reports, function (index, data) {
         tableData += '<div class="container">'
@@ -740,7 +738,7 @@
                 indicator using a Pivot Table</a></td>
           </tr>
         </table> -->
-          <button class="btn btn-secondary btn-sm" type="button" ng-click="vm.loadTablePlugin(table.tableDetails, table.tableDetails, table.tableDetails)">Show
+          <button onclick="this.disabled=true" class="btn btn-secondary btn-sm" type="button" ng-click="vm.loadTablePlugin(table.tableDetails, table.tableDetails, table.tableDetails)">Show
             WAD disaggregates
           </button>
           <a class="btn btn-secondary btn-sm" href="/dhis-web-pivot/?id={{table.tableCleaning}}" target="_blank">Click
